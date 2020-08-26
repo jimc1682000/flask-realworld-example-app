@@ -29,8 +29,8 @@ jobs:
           command: flask test
       - store_test_results:
           path: test-results
-  deploy:
-    executor: flask-exam
+  # deploy:
+  #   executor: flask-exam
 
 workflows:
   build_and_test:
