@@ -1,21 +1,42 @@
-version: 2
-jobs:
-  build:
-    working_directory: /home/jimmychen/circulate
+orbs:
+  heroku: circleci/heroku@1.2.2
+
+version: 2.1
+
+executors:
+  flask-exam:
+    working_directory: /home/mo/circulate
     docker:
       - image: python:3.8.5
         environment:
           FLASK_APP: autoapp.py
-          FLASK_DEBUG: 1
+          FLASK_DEBUG: 0
+
+
+jobs:
+  build:
+    executor: flask-exam
     steps:
       - checkout
       - run:
           name: install deps
-          command: pip install -r requirements/dev.txt
-
+          command: pip install -r requirements.txt
+  test:
+    executor: flask-exam
+    steps:
       - run:
           name: run tests
           command: flask test
       - store_test_results:
           path: test-results
+  deploy:
+    executor: flask-exam
+
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
 
