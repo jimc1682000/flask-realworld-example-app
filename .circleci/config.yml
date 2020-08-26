@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: /home/mo/circulate
+    working_directory: /home/jimmychen/circulate
     docker:
       - image: python:3.8.5
         environment:
@@ -16,3 +16,6 @@ jobs:
       - run:
           name: run tests
           command: flask test
+      - store_test_results:
+          path: test-results
+
