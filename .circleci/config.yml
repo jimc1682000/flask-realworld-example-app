@@ -4,39 +4,51 @@ orbs:
 version: 2.1
 
 executors:
-  flask-exam:
+  flask-exam-test:
     working_directory: /home/mo/circulate
     docker:
       - image: python:3.8.5
         environment:
           FLASK_APP: autoapp.py
           FLASK_DEBUG: 1
+  flask-exam:
+    working_directory: /home/mo/circulate
+    docker:
+      - image: python:3.8.5
+        environment:
+          FLASK_APP: autoapp.py
+          FLASK_DEBUG: 0
 
 
 jobs:
+  test:
+    executor: flask-exam-test
+    steps:
+      - checkout
+      - run:
+          name: install deps
+          command: pip install -r requirements/dev.txt
+      - run:
+          name: run tests
+          command: flask test
+      - store_test_results:
+          path: test-results
   build:
     executor: flask-exam
     steps:
       - checkout
       - run:
           name: install deps
-          command: pip install -r requirements/dev.txt
-  test:
-    executor: flask-exam
-    steps:
-      - run:
-          name: run tests
-          command: flask test
-      - store_test_results:
-          path: test-results
+          command: pip install -r requirements.txt
+
   # deploy:
   #   executor: flask-exam
 
 workflows:
-  build_and_test:
+  test_and_build:
     jobs:
-      - build
-      - test:
+      - test
+      - build:
           requires:
-            - build
+            - test
 
